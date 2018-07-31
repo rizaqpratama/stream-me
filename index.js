@@ -6,6 +6,8 @@ const mongodb = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 const Server = require('mongodb').Server;
+const mm = require('music-metadata');
+
 
 
 const { Readable } = require('stream')
@@ -84,7 +86,14 @@ trackRoute.post('/', (req,res) => {
 
     const readableTrackStream = new Readable();
     readableTrackStream.push(req.file.buffer);
+    mm.parseStream(readableTrackStream, 'audio/mpeg').then(
+      (metadata) => {
+        console.log(metadata.common);
+      }
+    )
     readableTrackStream.push(null);
+
+   
 
     let bucket = new mongodb.GridFSBucket(db, {
       bucketName: 'tracks'
